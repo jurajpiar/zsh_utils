@@ -1,0 +1,15 @@
+#!/bin/bash
+
+default_home="$HOME/rif_aggregation"
+
+if [ -d "$default_home" ]; then
+    export ZKSYNC_HOME=$default_home
+else
+    export ZKSYNC_HOME=$(find "$HOME" -name "ri-aggregation" -type d -print -quit)
+fi
+
+export PATH="$ZKSYNC_HOME/bin:$PATH"
+
+export NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem"
+
+cd "$ZKSYNC_HOME" || return

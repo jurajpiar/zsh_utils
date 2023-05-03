@@ -1,0 +1,57 @@
+#!/bin/bash
+
+read "?ZK CLEAN Continue (y/n)?" do_clean
+case "$do_clean" in
+  y | Y) echo "OK, let's go" ;;
+  n | N) echo "ciao ciao" && return 1 ;;
+  *) echo "try again" && return 2 ;;
+esac
+
+read "?Nuke docker as well? Continue (y/n)?" do_docker
+case "$do_docker" in
+  y | Y)
+    echo "affirmative" &&
+      docker ps -aq | xargs docker rm -f &&
+      docker system prune --all --force --volumes &&
+      rm -rf volumes &&
+      echo "All dead"
+    ;;
+  n | N) echo "Keeping docker untouched." ;;
+  *) echo "try again" && return 2 ;;
+esac
+
+
+current_dir=$(pwd)
+
+if [[ "$current_dir" == "$ZKSYNC_HOME" ]];
+then {
+  echo "changing to zk"
+  cd "$ZKSYNC_HOME" || return
+}
+else {
+  echo "zk"
+}
+fi;
+
+echo "deleting DB"
+DATABASE_URL=postgres://postgres@localhost/plasma diesel database reset ;
+
+echo "deleting target"
+rm -rf target ;
+
+echo "deleting node modules, build and dist folders"
+find . -name "node_modules" -type d -prune -exec rm -rf '{}' + ;
+find . -name "build" -type d -prune -exec rm -rf '{}' + ;
+find . -name "dist" -type d -prune -exec rm -rf '{}' + ;
+
+echo "deleting etc/env/dev and etc/env/dev.env"
+rm -rf etc/env/dev ;
+rm -rf etc/env/dev.env ;
+
+if [[ "$current_dir" == "$ZKSYNC_HOME" ]]; then {
+  echo "changing back to $current_dir"
+  cd "$current_dir" || return
+}
+fi ;
+
+echo "🦆"
