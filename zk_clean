@@ -11,8 +11,9 @@ read "?Nuke docker as well? Continue (y/n)?" do_docker
 case "$do_docker" in
   y | Y)
     echo "affirmative" &&
-      docker ps -aq | xargs docker rm -f &&
-      docker system prune --all --force --volumes &&
+      # docker ps -aq | xargs docker rm -f &&
+      docker-compose down --rmi all -v --remove-orphans
+      # docker system prune --all --force --volumes &&
       rm -rf volumes &&
       echo "All dead"
     ;;
