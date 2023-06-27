@@ -1,11 +1,34 @@
 #!/bin/bash
 
+current_dir=$(pwd)
+
+if [ -z ${ZKSYNC_HOME+x} ]; then echo "ZKSYNC_HOME env var is required" && return 2; fi
+
+return_to_dir() {
+  if [[ "$current_dir" != "$ZKSYNC_HOME" ]]; then {
+    echo "changing back to $current_dir"
+    cd "$current_dir" || return
+  }
+  fi ;
+}
+
+trap return_to_dir EXIT
+
 read "?ZK CLEAN Continue (y/n)?" do_clean
 case "$do_clean" in
   y | Y) echo "OK, let's go" ;;
   n | N) echo "ciao ciao" && return 1 ;;
   *) echo "try again" && return 2 ;;
 esac
+
+echo $(pwd)
+echo $current_dir
+
+if [[ "$current_dir" != "$ZKSYNC_HOME" ]]; then {
+  echo "changing to $ZKSYNC_HOME"
+  cd "$ZKSYNC_HOME" || return
+}
+fi;
 
 read "?Nuke docker as well? Continue (y/n)?" do_docker
 case "$do_docker" in
@@ -21,19 +44,6 @@ case "$do_docker" in
   *) echo "try again" && return 2 ;;
 esac
 
-
-current_dir=$(pwd)
-
-if [[ "$current_dir" == "$ZKSYNC_HOME" ]];
-then {
-  echo "changing to zk"
-  cd "$ZKSYNC_HOME" || return
-}
-else {
-  echo "zk"
-}
-fi;
-
 echo "deleting DB"
 DATABASE_URL=postgres://postgres@localhost/plasma diesel database reset ;
 
@@ -48,11 +58,5 @@ find . -name "dist" -type d -prune -exec rm -rf '{}' + ;
 echo "deleting etc/env/dev and etc/env/dev.env"
 rm -rf etc/env/dev ;
 rm -rf etc/env/dev.env ;
-
-if [[ "$current_dir" == "$ZKSYNC_HOME" ]]; then {
-  echo "changing back to $current_dir"
-  cd "$current_dir" || return
-}
-fi ;
 
 echo "🦆"
