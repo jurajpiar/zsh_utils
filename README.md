@@ -1,4 +1,4 @@
-# zsh_site-functions
+# zsh_utils
 
 some things I found useful to automate mainly at work, i.e. how I wasted time, so that I can save some.
 
@@ -8,18 +8,18 @@ some things I found useful to automate mainly at work, i.e. how I wasted time, s
 ## Usage
 
 - let's call the desired installation directory `$ZSH_UTILS`
-  - e.g. `export ZSH_UTILS = '~/src/utils/zsh/functions'`
+  - e.g. `export ZSH_UTILS = '~/src/utils/zsh'`
 - let's call the function name we want to install `$ZSH_UTIL_NAME`
   - e.g. `export ZSH_UTIL_NAME = 'zk_clean'`
 
 ```shell
-git clone https://github.com/jurajpiar/zsh_site-functions $ZSH_UTILS
+git clone https://github.com/jurajpiar/zsh_utils $ZSH_UTILS
 ```
 
 add `$ZSH_UTILS/functions` to `fpath` and autoload all functions into your `.zshrc` file with:
 
 ```shell
-sed -i -e "1s;^;# Custom zsh functions\nfpath=(${ZSH_UTILS}/functions $fpath)\nautoload $ZSH_UTILS/functions/*\n\n;" .zshrc
+sed -i -e "1s;^;# Custom zsh functions\nfpath=(${ZSH_UTILS}/functions $fpath)\nautoload -Uz $ZSH_UTILS/functions/*\n\n;" .zshrc
 ```
 
 to load a single utility in your current terminal without sourcing `.zshrc`
