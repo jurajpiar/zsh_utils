@@ -1,4 +1,4 @@
-# zsh_site-functions
+# zsh_utils
 
 some things I found useful to automate mainly at work, i.e. how I wasted time, so that I can save some.
 
