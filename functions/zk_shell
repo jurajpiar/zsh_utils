@@ -1,0 +1,18 @@
+#!/bin/bash
+
+[[ ! $(command -v fd) ]] && brew install fd
+
+local default_home="$HOME/rif-rollup-core"
+
+if [ -d "$default_home" ]; then
+    export ZKSYNC_HOME=$default_home
+else
+    export ZKSYNC_HOME=$(fd --type f package.json --exclude Library --exclude node_modules --exclude build --exclude dist --exec grep -l "zksync-root" | sed 's/package.json//g')
+    ln -s $ZKSYNC_HOME $HOME/rif-rollup-core
+fi
+
+export PATH="$ZKSYNC_HOME/bin:$PATH"
+
+export NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem"
+
+cd "$ZKSYNC_HOME" || return
